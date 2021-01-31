@@ -1,0 +1,81 @@
+3d 3d 3g 3g 3g 3d
+3a 3a 3b 3b 3a 3g
+3e 3e 3g 3g 3a 3g
+3d 3d 3g 3g 3g 3g
+
+3a 3a 3b 3b 3b 3a
+3b 3b 4d 3b 3a 3g
+3e 3e 3g 3g 3b 3g
+3a 3a 3a 3a 3a 3a
+
+3b 3b  3a 3g 3a 3g
+3a 3a 3b 3b 3a 3g
+3e 3e 3g 3g 3g 3a
+3g 3a 3g 3e 3d 3e
+
+3d 3d 3g 3g 3g 3d
+3a 3a 3g 3a 3b 3b
+3e 3e 3e 3a 3b 3a
+3g 3g 3g 3g _ _
+
+3b 3b 3a 3b 4d 4d
+4d 4d 4d 4d 4d 4d
+4d 4d 4d 4d 4d 4d
+4d 4d 3b 3a 3g 3g 
+
+3e 3e 3g 3g 3b 3g
+3a 3a 3g 3e 3d 3d
+3e 3e 3g 3g 3b 3g
+3a 3a 3a 3a 3a 3a
+
+3b 3b  3a 3g 3a 3g
+3a 3a 3b 3b 3a 3g
+3e 3e 3g 3g 3g 3a
+3g 3a 3g 3e 3d 3e
+
+3d 3d 3g 3g 3g 3d
+3a 3a 3g 3a 3b 3b
+3e 3e 3e 3a 3b 3a
+3g 3g 3g 3g 3g 3g
+
+- - - - - - - -
+
+3d - 3g - 3g 3d
+3a - 3b - 3a 3g
+3e - 3g - 3a 3g
+3d - 3g - - -
+
+3a - 3b 3b - 3a
+3b - 4d 3b 3a 3g
+3e - 3g - 3b 3g
+3a - 3a - - - 
+
+3b -  3a 3g 3a 3g
+3a - 3b - 3a 3g
+3e - 3g - 3g 3a
+3g 3a 3g 3e 3d 3e
+
+3d - 3g - 3g 3d
+3a - 3g 3a 3b -
+3e - - 3a 3b 3a
+3g - 3g - _ _
+
+3b - 3a 3b 4d -
+- - - - - - 
+- - - - - -
+- - 3b 3a 3g - 
+
+3e - 3g - 3b 3g
+3a - 3g 3e 3d -
+3e - 3g - 3b 3g
+3a - - - - - 
+
+3b -  3a 3g 3a 3g
+3a - 3b - 3a 3g
+3e - 3g - 3g 3a
+3g 3a 3g 3e 3d 3e
+
+3d - 3g - 3g 3d
+3a - 3g 3a 3b -
+3e - - 3a 3b 3a
+3g - 3g - - - 
