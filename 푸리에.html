@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>오디오</title>
+</head>
+<body>
+   <h1>FFT로 직접 음악 분석</h1>
+    <input id='오디오' type="file">
+    <button onclick="change()">파일분석</button>
+    <button onclick="play.start()">재생시작</button>
+    <button onclick="play.stop()">재생정지</button>
+    <button onclick="play.stop();play.start();">변경</button>
+    <input id="피치" type="range" min='-12' max='12'><span id='현재피치'></span>
+<!--    <button onclick="play.피치 =  2**(Number( document.getElementById('피치').value)/12);">피치</button>-->
+    <button onclick="var 간격 = 1<<12
+var re = 갖고오기(191500,간격, 0)
+var im = new Float32Array(간격)
+miniFFT(re,im);
+그리기.그리기(re,im,-1)
+그리기.라벨(간격)
+   그리기.선그리기()">그리기</button>
+   
+   <script>
+       var 피노 = document.getElementById('피치');
+       var 현피 = document.getElementById('현재피치');
+       현피.innerHTML = 피노.value = 0;
+   피노.addEventListener('mousemove',(e)=>{play.피치=2**(Number(현피.innerHTML=피노.value)/12)})
+   피노.addEventListener('change',(e)=>{play.피치=2**(Number(현피.innerHTML=피노.value)/12)})
+       
+       
+    </script>
+    
+    <svg id='시각화'>
+        <g id='막대들'></g>
+        <g id='재생현황'>
+            <rect id='진행중' width="0" height="20" y='-10' fill-opacity="0.5"/>
+        </g>
+    </svg>
+    
+    <svg id='그래프'>
+        <g id='비주얼'></g>
+        <g id='법례'></g>
+        <g id='조작'>
+           <g id="선"></g>
+            <g id="점">
+                <circle cx='2' cy='-1' r="0.05" ></circle>
+            </g>
+            
+        </g>
+        <style>
+        .표기 {
+            font-size: 0.01em;
+            fill: blue;
+            }
+        </style>
+    </svg>
+    <svg id="조작">
+    </svg>
+    <span id="표시"></span>
+    
+    <!--그냥-->
+    <script>
+        const 표시 = document.getElementById('표시')
+        
+        function change(){
+            var Cevent = new Event('change');
+            document.getElementById('오디오').dispatchEvent(Cevent)
+        }
+        window.onload = change
+        
+         var 오디오 = {
+             '오디오': new AudioContext(),
+             '샘플레이트':0,
+             '피크':[],
+             '버퍼':null,
+             'svg':document.getElementById('시각화'),
+             '길이':0,
+         }
+        
+        
+        document.getElementById('오디오').addEventListener('change',e=>{
+            console.log('피일 읽힘')
+            const file = e.target.files[0]
+            if (file){
+                const 리더 = new FileReader()
+                리더.readAsArrayBuffer(file)
+                리더.onload=e=>{
+                    console.log("파일 읽기 완로",e.target.result);
+                   오디오.오디오.decodeAudioData(e.target.result).then(버퍼=>{
+                       
+                       console.log("버퍼",버퍼)
+                       
+                       오디오.버퍼 = 버퍼;
+                       오디오.길이 = 버퍼.length
+                       오디오.샘플레이트=버퍼.sampleRate;
+                       
+                        
+                       var 피크 = 오디오.버퍼.getChannelData(0)
+                       var 간격 = 오디오.길이 / 오디오.샘플레이트 * 10 //0.1초
+                       var 너비 = 오디오.길이 / 간격
+                       let d=''
+                       
+                       console.log(오디오, 간격/10,"초를 분석 할 것.");
+                       for(var i=0;i<간격;i++){
+                           표시.innerHTML = i;
+                           let min, max;
+                           min = max = 피크[i*너비];
+                           for(var j=1; j<너비 ;j++){
+                               var 값 = 피크[Math.floor(i*너비+j)]
+                               if(값>max) max=값
+                               if(값<min) min=값
+                           }
+                           d+=`M${i/10} ${min*10} L${i/10} ${max*10} `;  
+                       }
+                       d+='Z'
+                       
+                       //svg 파일을 만들어봐요
+                       
+                       오디오.svg.setAttribute('viewBox',`0 -15 ${간격/10} 30`)
+                       var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                        path.setAttributeNS(null, 'd', d);
+                        path.setAttributeNS(null, 'stroke', "red");
+                        path.setAttributeNS(null, 'stroke-width', "0.2px");
+                       document.getElementById('막대들').appendChild(path)
+                       
+                       
+                       
+                       //오디오.오디오.createBufferSource()
+                       //오디오.오디오.createBufferSource()
+                   })
+                
+                }
+                
+            }
+        })
+        
+    </script>
+    
+    <script>
+  /*  function 푸리에(start,N){
+        start = Math.floor(오디오.샘플레이트*start)
+        N = Math.floor(오디오.샘플레이트*N)
+        var PI = Math.PI;
+        var 피크 = 오디오.버퍼.getChannelData(0)
+        console.log("푸리에, 개수와 시작지점",N,start)
+        let 데이터 =  new Float32Array(N) //Array(N).fill()
+        데이터.forEach(function(v,i,array){
+            var sum=0
+            var temp
+            for(var j=0; j<N;j++){
+                var 값 = 피크[j+start];
+                temp = 2  * PI * (i * j / N);
+                sum+= 피크[start+j] * Math.cos(temp)
+                //console.log('for',i,j,temp,피크[start+j] ,sum)
+            }
+           array[i]=sum
+            //console.log(v,i,array,sum)
+        })//.then(()=>{console.log("hi")});
+        return 데이터;
+    }
+        
+    function 역푸리에(list){
+        //https://data-make.tistory.com/264
+      // var out = Float32Array(list.length)
+       var N = list.length;
+        var PI = Math.PI;
+        
+      // var 버퍼 =  오디오.오디오.createBuffer(1,N,오디오.샘플레이트)
+        
+       var 데이터 =  new Float32Array(N) //버퍼.getChannelData(0)
+       console.log('역푸리에',N);
+       데이터.forEach(function(v,i,ar){
+           var sum=0, temp;
+           for(var j=0;j<N;j++){
+               temp = - 2  * PI * (i * j / N);
+               sum += list[j] * Math.cos(temp)
+           }
+           ar[i]=sum/N
+           //console.log(sum,i,j,list[i],ar[i])
+       })
+   // console.log("끝",버퍼)
+    return 데이터;
+    }
+//    역푸리에(오디오.푸리에);*/
+     
+    function 갖고오기(start,N,channel){
+        start = Math.floor(start)
+        N = Math.floor(N)
+        
+        var 피크 = 오디오.버퍼.getChannelData(channel)
+        let 데이터 =  new Float32Array(N)
+        데이터.forEach(function(v,i,array){
+            array[i] = 피크[start+i]
+            //console.log(피크[i],i)
+        })
+        return 데이터
+    }
+        
+    var 시간 = 1
+    function 재생1(){
+            시간+=1
+            var source = 오디오.오디오.createBufferSource();
+            //source.buffer = 역푸리에(list);
+            source.connect(오디오.오디오.destination);
+            
+            
+            var 샘플비 = 오디오.샘플레이트;
+            var 시작 = 샘플비 * 시간
+            var 끝 = 샘플비 * (시간+1)
+            var 간격 = 1<<15
+            var floor = x=>Math.floor(x)
+            
+            var 버퍼 =  오디오.오디오.createBuffer(1,끝-시작,샘플비)
+            var 데이터 = 버퍼.getChannelData(0)
+            
+            
+           for(var i=시작;i<끝; i+=간격){
+               
+                var re = 갖고오기(i,간격,0)
+                var im = new Float32Array(간격).fill(0)
+                miniFFT(re,im)
+                miniIFFT(re,im)
+                   
+               re.forEach(function(v,j,ar){
+                    데이터[i+j-시작] = v;
+                })
+                
+                console.log("변환중",i/샘플비)
+               if (i==시작)source.start();
+            }
+            source.buffer = 버퍼
+            source.onended = 재생1
+            console.log("시작 직전",source,버퍼) 
+        }
+        
+  
+        // 방법 1: 변조가 있을 때 마다 새로 만들고, 새로 재생 (---)
+        // 방법 2: 일단 곡 재생시킴. 시간에 맞춰 따로 읽어 그래픽으로
+        
+    function 최대값(){
+        var j=0;
+        var m=0;
+        for(var i=0; i<오디오.푸리에.length;i++){
+        if (Math.abs(오디오.푸리에[i])>m){
+        m=Math.abs(오디오.푸리에[i]); 
+        j=i;
+        }
+        }
+        console.log(j,m, j/오디오.푸리에.length*오디오.샘플레이트)
+    }
+        
+   /* function 그래프(){
+        console.log("그래프를 그렸음");
+        var 길이 = 오디오.푸리에.length
+        var d=`M${Math.log(길이)} 0 L0 0 `
+        for(var i=1;i<길이;i++){
+            d+=`L${Math.log(i)} ${-Math.abs(오디오.푸리에[i]*0.01)} `;
+            }
+        d+=''
+        //console.log(d)
+        document.getElementById('그래프').setAttribute('viewBox',`0 -2 ${Math.log(길이)} 50`)
+       var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttributeNS(null, 'd', d);
+        path.setAttributeNS(null, 'stroke', "red");
+        path.setAttributeNS(null, 'stroke-width', "0.02px");
+       // path.setAttributeNS(null, 'fill', "");
+       document.getElementById('비주얼').innerHTML=''
+        document.getElementById('비주얼').appendChild(path)            
+    }*/
+        
+    var 그리기={
+    그리기:(re,im, 세로)=>{
+        
+        var 길이 = Math.log(re.length/4)*1.0
+        var d= `M0 0 `
+        var dis = (x,y)=>{return Math.sqrt(x*x+y*y)}
+        for(var i=2;i<re.length/2;i++){
+            d+=`L${Math.log(i)} ${i*dis(re[i],im[i])/re.length*세로} `;
+            //d+=`L${i/re.length*2*길이} ${300*dis(re[i],im[i])/re.length*세로} `;
+        }
+        d+=`L${Math.log(i)} 0 Z`
+        document.getElementById('그래프').setAttribute('viewBox',`${Math.log(2)} -2 ${길이} 5`)
+       var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttributeNS(null, 'd', d);
+        path.setAttributeNS(null, 'stroke', "red");
+        path.setAttributeNS(null, 'fill', "black");
+        path.setAttributeNS(null, 'stroke-width', "0.001px");
+       document.getElementById('비주얼').innerHTML=''
+        document.getElementById('비주얼').appendChild(path)     
+        
+        var d2= `M0 0 `
+        조절(re,play.피치)
+        조절(im,play.피치)
+        for(var i=2;i<re.length/2;i++){
+            d2+=`L${Math.log(i)} ${i*dis(re[i],im[i])/re.length*세로} `;
+            //d2+=`L${i/re.length*2*길이} ${300*dis(re[i],im[i])/re.length*세로} `;
+        }
+        d2+=`L${Math.log(i)} 0`
+       var path2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path2.setAttributeNS(null, 'd', d2);
+        path2.setAttributeNS(null, 'stroke', "yellow");
+        path2.setAttributeNS(null, 'fill', "gray");
+        path2.setAttributeNS(null, 'stroke', "red");
+        path2.setAttributeNS(null, 'stroke-width', "0.001px");
+        path2.setAttributeNS(null, 'fill-opacity', "0.6");
+        document.getElementById('비주얼').appendChild(path2)  
+        
+    },
+        
+    라벨: (간격)=>{
+        
+        그리기.x시작 = Math.log(2)
+        //console.log("그리기.x길이",그리기.x길이,Math.log(간격.length/4),간격)
+        그리기.x길이 = Math.log(간격/4)
+        그리기.y시작 = -2
+        그리기.y길이 = 5;
+        
+        
+        [12.5,25,50,100,200,400,800,1600,3200,6400,12800,25600].forEach(function(v,i,ar){
+                var text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.classList.add("표기")
+                //console.log(v,v/오디오.샘플레이트*간격)
+                text.setAttributeNS(null, 'x', `${Math.round(Math.log(v/오디오.샘플레이트*간격)*10000)/10000}`);
+                text.setAttributeNS(null, 'y', '0.2');
+                text.innerHTML = v
+                 document.getElementById('법례').appendChild(text)
+            })
+    },
+    원그리기 : (e)=>{
+        console.log(e)
+        if (그리기.움직처음pgy!=null) return;
+        var 점들 = document.getElementById('점')
+        
+        var x = e.offsetX
+        e.offsetY
+        if(!e.ctrlKey && e.target.tagName =="svg"){
+            var 가로 = document.getElementById('그래프').clientWidth;
+            var cx = x/가로*(그리기.x길이) + 그리기.x시작
+            if(그리기.점x위치.includes(cx)) return;
+            그리기.점x위치.push(cx)
+            그리기.점y위치.push(-1)
+           // <circle cx='2' cy='-1' r="0.1"></circle>
+            
+            var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.classList.add("점임")
+            circle.setAttributeNS(null, 'cx', `${cx}`);
+            circle.setAttributeNS(null, 'cy', `-1`);
+            circle.setAttributeNS(null, 'r', `0.05`);
+            
+            점들.appendChild(circle)
+            그리기.선그리기()
+        }
+        else if (e.ctrlKey && e.target.tagName =="circle"){
+            var cx = Number(e.target.attributes.cx.value)
+            var ind = 그리기.점x위치.indexOf(cx)
+            console.log("지우기",e.target,e.target.attributes.cx,cx,ind)
+            그리기.점x위치.splice(ind,1)
+            그리기.점y위치.splice(ind,1)
+            점들.removeChild(e.target)
+            그리기.선그리기()
+        }
+    },
+    간격:0,
+    점x위치:[2],
+    점y위치:[-1],
+    내림:(e)=>{
+        
+        if(e.target.tagName!="circle") return;
+        
+        그리기.움직현재 =  e.target
+        그리기.움직처음pgy = e.pageY
+        그리기.움직처음cy = Number(e.target.attributes.cy.value)
+        //console.log("처음", e.pageY, 그리기.움직현재, 그리기.움직처음pgy, 그리기.움직처음cy)
+    },
+    움직:(e)=>{
+        if (그리기.움직처음pgy==null) return;
+        
+        var y = e.pageY;
+        //console.log(e,"움직",y)
+        var 세로 = document.getElementById('그래프').clientHeight;
+        
+        var cy = (y-그리기.움직처음pgy)/세로*그리기.y길이 + 그리기.움직처음cy
+        //console.log("cy",cy, y,그리기.움직처음pgy,세로,그리기.y길이 ,그리기.움직처음cy )
+        if (cy>0) cy=0
+        그리기.움직현재.attributes.cy.value = cy
+        
+        var ind = 그리기.점x위치.indexOf(Number(그리기.움직현재.attributes.cx.value))
+       // console.log("점y위치",cy,ind,그리기.점y위치, 그리기.움직현재.attributes.cx.value, 그리기.점x위치)
+        그리기.점y위치[ind]=cy
+        
+        그리기.선그리기()
+    },
+    올림:(e)=>{
+        //console.log(e,"올림",그리기.움직처음cy)
+        
+        if (그리기.움직처음pgy==null) return;
+        그리기.움직현재 = null;
+        그리기.움직처음pgy = null;
+        그리기.움직처음cy = null;
+    },
+    움직현재:null,
+    음직처음pgy:null,
+    움직처음cy:null,
+    선그리기:()=>{
+        var list = []
+        그리기.점x위치.forEach(function(v,i,ar){
+            list.push({'n':i,'x':v, 'y': 그리기.점y위치[i]})
+        })
+        list.sort((a,b)=>{return a.x>b.x?1:a.x==b.x?0:-1})
+        그리기.정렬배열 = list
+        //console.log(list)
+        
+        var d=`M ${그리기.x시작} ${list[0] ? list[0].y: -1}`
+        for(var i=0;i<list.length;i++){
+            d+=`L ${list[i].x} ${list[i].y}`
+        }
+        d+=`L ${그리기.x시작 + 그리기.x길이} ${list[i-1] ? list[i-1].y : -1}`
+        var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttributeNS(null, 'd', d);
+        path.setAttributeNS(null, 'stroke', "green");
+        path.setAttributeNS(null, 'fill', "none");
+        path.setAttributeNS(null, 'stroke-width', "0.01px");
+        document.getElementById('선').innerHTML=''
+        document.getElementById('선').appendChild(path)
+    },
+    변환:(x)=>{
+        //x:x좌표
+        if (!그리기.정렬배열 || !그리기.정렬배열.length) return 1;
+        else if (그리기.정렬배열.length==1 || x<그리기.정렬배열[0].x) return -그리기.정렬배열[0].y;
+        for(var i=1;i<그리기.정렬배열.length;i++){
+            if (그리기.정렬배열[i].x > x) {
+                var x1 = 그리기.정렬배열[i-1].x
+                var y1 = 그리기.정렬배열[i-1].y
+                var x2 = 그리기.정렬배열[i].x
+                var y2 = 그리기.정렬배열[i].y
+                
+                return -((x-x1)/(x2-x1)*(y2-y1)+y1)
+            }
+        }
+        return -그리기.정렬배열[i-1].y;
+    }
+    }
+    
+    
+    var 그래프 = document.getElementById('그래프')
+    그래프.addEventListener('mousedown',그리기.원그리기);
+    그래프.addEventListener('mousedown',그리기.내림);
+    그래프.addEventListener('mousemove',그리기.움직);
+    document.body.addEventListener('mouseup',그리기.올림);
+  
+    //그래프();
+        
+    function 조절(list,피치){
+        var 간격 = list.length;
+        var list_ = list.slice()
+        for(var i=0;i<간격/2;i++){
+            var 보수 = 간격-i-1
+                list[i] *= 10**((그리기.변환(i>0?Math.log(i):0)-1)*2)
+                list[보수] *= 10**((그리기.변환(i>0?Math.log(i):0)-1)*2)
+            
+                if (피치!=1){ //조이동. 배로 움직여야.
+                    var pi = i/피치
+                    var s = Math.floor(pi)
+                    var pi_ = 간격-pi-1;
+                    var s_ = 간격-s-1;
+                    //알고리즘 1: 보간법
+                    /* //console.log(i,"앞",pi,s,list_[s+1],list_[s],"뒤",pi_,s_,list_[s_-1],list_[s_],)
+                    list[i] = (s+1)<간격/2? (pi-s)*(list_[s+1]-list_[s])+list_[s] : 0;
+                    list[보수] = (s_-1)>=간격/2?-(pi-s)*(list_[s_]-list_[s_-1])+list_[s_] : 0;
+                    */
+                    //알고리즘 2: 대충 반올림. 이게 더 그럴싸
+                    list[i] = s<간격/2?list_[s]:0
+                    list[보수] = s_>간격/2?list_[s_]:0
+                    
+            }
+        }
+    }
+        
+    var play = {
+        'start_time':0,
+        'stop_time':0,
+        'is_playing':false,
+        '피치':1,
+        'set':(index, callback)=>{
+            index = Math.floor(index)
+            var 간격제기 = new Date()
+            console.log("play.start",index,오디오.길이)
+            
+            play.source = 오디오.오디오.createBufferSource();
+            
+            var 버퍼 =  오디오.오디오.createBuffer(1,오디오.길이 - index, 오디오.샘플레이트)
+            var data = 버퍼.getChannelData(0)
+            //전체복사
+            var 피치 = 오디오.버퍼.getChannelData(0)
+            data.forEach(function(v,i,arr){arr[i]=피치[i+index]})
+            play.source.buffer = 버퍼;
+            
+            play.user_node()
+            play.source.connect(play.scriptNode);
+            play.scriptNode.connect(오디오.오디오.destination);
+            
+            //console.log('set - 소요시간', new Date() - 간격제기)
+            play.start_time  =  Number(play.start_time) + Number(new Date - 간격제기)
+            if(callback) callback();
+        },
+        'start':()=>{
+           
+            play.is_playing = true
+            var date = new Date()
+            if (!play.start_time) play.start_time = date //처음 시작한 경우
+            else play.start_time = date - (play.stop_time - play.start_time) //시작 된 경우
+            
+            console.l
+            play.set(오디오.샘플레이트*(date-play.start_time )/1000,()=>{play.source.start()})
+            
+            var 간격 = 1<<12; //그리는 부분임
+            그리기.라벨(간격);
+            그리기.선그리기();
+            
+            play.drow_stop = setInterval(()=>{
+               var 현재초 =  (new Date() - play.start_time)/1000
+               var 현재 = 오디오.샘플레이트*현재초
+               
+               document.getElementById('진행중').attributes.width.value = 현재초 ;
+               if (현재>오디오.길이) play.finish()
+                var re = 갖고오기(현재,간격, 0)
+                var im = new Float32Array(간격)
+                miniFFT(re,im);
+                그리기.그리기(re,im,-0.4)
+            },50)
+           
+        },
+        'stop':()=>{
+            clearInterval(play.drow_stop)
+            play.source.stop();
+            play.is_playing = false;
+            play.stop_time = new Date()
+        },
+        'finish':()=>{
+            play.stop()
+            play.is_playing = false;
+            play.drow_stop = play.stop_time = play.start_time = 0
+            play.source = 0
+        },
+        'drow_stop':-1,
+        'user_node':()=>{
+            play.scriptNode = 오디오.오디오.createScriptProcessor(1<<13,1,1) //들어감1, 나옴1 체널
+            play.scriptNode.onaudioprocess = function(처리이벤트){
+                var 간격 = 1<<13;
+                var input_buffer = 처리이벤트.inputBuffer
+                var output_buffer = 처리이벤트.outputBuffer
+                
+                var inputData = input_buffer.getChannelData(0);
+                var outputData = output_buffer.getChannelData(0);
+                
+                var re = inputData;
+                var im = new Float32Array(간격).fill(0)
+                miniFFT(re,im);
+                조절(re,play.피치); 조절(im,play.피치);
+                miniIFFT(re,im);
+                re.forEach(function(v,i,ar){outputData[i] = v})
+            }
+        }
+    }
+    
+    var 시각화 = document.getElementById('시각화');
+    시각화.addEventListener('click',(e)=>{
+        var 시각 = e.pageX/시각화.clientWidth*오디오.길이/오디오.샘플레이트;
+        console.log("위치",e,시각 )
+        try{play.stop()}catch{}
+        play.start_time = new Date() - 시각*1000;
+        play.stop_time = new Date();
+        play.start()
+    })
+    
+    /* //모양 만드는 용도
+var 간격 = 1<<12
+var re = 갖고오기(191500,간격, 0)
+var im = new Float32Array(간격)
+miniFFT(re,im);
+그리기.그리기(re,im,-1)
+그리기.라벨(간격)
+*/
+
+        
+function miniFFT(re, im) {
+    var N = re.length;
+    for (var i = 0; i < N; i++) {
+        for(var j = 0, h = i, k = N; k >>= 1; h >>= 1)
+            j = (j << 1) | (h & 1);
+        if (j > i) {
+            re[j] = [re[i], re[i] = re[j]][0]
+            im[j] = [im[i], im[i] = im[j]][0]
+        }
+    }
+    for(var hN = 1; hN * 2 <= N; hN *= 2)
+        for (var i = 0; i < N; i += hN * 2)
+            for (var j = i; j < i + hN; j++) {
+                var cos = Math.cos(Math.PI * (j - i) / hN),
+                    sin = Math.sin(Math.PI * (j - i) / hN)
+                var tre =  re[j+hN] * cos + im[j+hN] * sin,
+                    tim = -re[j+hN] * sin + im[j+hN] * cos;
+                re[j + hN] = re[j] - tre; im[j + hN] = im[j] - tim;
+                re[j] += tre; im[j] += tim;
+            }
+}
+
+function miniIFFT(re, im){
+    miniFFT(im, re);
+    for(var i = 0, N = re.length; i < N; i++){
+        im[i] /= N;
+        re[i] /= N;
+    }
+}
+
+    </script>
+    
+    
+    <h5>참고문헌</h5>
+    <p>
+       <ol type="I">
+       <li>https://evan-moon.github.io/2019/07/10/javascript-audio-waveform/</li>
+        <li>https://ko.wikipedia.org/wiki/이산_푸리에_변환</li>
+        <li>https://data-make.tistory.com/264</li>
+        <li>https://antimatter15.com/2015/05/cooley-tukey-fft-dct-idct-in-under-1k-of-javascript/</li>
+        <li>developer.mozilla.org/en-US</li>
+        <li>https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/createScriptProcessor</li>
+        </ol>
+    </p>
+</body>
+</html>

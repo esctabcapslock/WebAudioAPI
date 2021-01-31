@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>안녕</title>
+    <style>
+        #재생{
+            height: 500px;
+            width: 500px;
+        }
+    </style>
+</head>
+<body>
+ <div id="파형">
+     <span onclick="오디오.파형='sine'">sine</span>
+     <span onclick="오디오.파형='square'">square</span>
+     <span onclick="오디오.파형='sawtooth'">sawtooth</span>
+     <span onclick="오디오.파형='triangle'">triangle</span>
+ </div>
+ <div id="옥타는">옥타브: <span id='옥타브'>3</span></div>
+  <button onclick="재생.시작()">재생</button>
+   <textarea id='재생'>
+       
+   </textarea>
+   
+   <textarea id="입력내역"></textarea>
+   
+    
+    
+    
+<!--    단순재생-->
+    <script>
+        var 단계 = 2**(1/12);
+         document.getElementById('입력내역').value=''
+        
+        document.body.addEventListener('keydown',(e)=>{
+            
+            console.log('누름',e.key, e.target.tagName)
+            if (e.target.tagName!='BODY') return;
+            
+            if (e.key=='Backspace'){
+                e.returnValue=false;
+                var a = document.getElementById('입력내역').value
+                document.getElementById('입력내역').value=a.substr(0,a.length-3)
+            }
+            else if(e.key==' '){
+                document.getElementById('입력내역').value += '  _'
+            }
+            else if("_-".includes(e.key)){
+                document.getElementById('입력내역').value += '  '+e.key
+            }
+            else if ("1234567890".includes(e.key)){
+                오디오.옥타브 = Number(e.key)
+                document.getElementById('옥타브').innerHTML=오디오.옥타브
+            } 
+            else if (오디오.음계(e.key)) {
+                if (오디오.목록[e.key]) return;
+                
+                //입력내역추가
+                var a="asedrfgyhujiklp;["
+                 var 내보낼옥타브 = 오디오.옥타브
+                if ("a".includes(e.key)) 내보낼옥타브-=1
+                else if ("lp;[".includes(e.key)) 내보낼옥타브+=1
+                
+                
+                var 코드 = 내보낼옥타브.toString()+"b c cs d ds e f fs g gs a as b c cs d ds".split(" ")[a.indexOf(e.key)]
+                document.getElementById('입력내역').value+=' '+코드
+                
+                오디오.작성(오디오.음계(e.key),e.key)
+            }
+        })
+        
+        document.body.addEventListener('keyup',(e)=>{
+             //console.log('올림',e.key)
+            if (오디오.음계(e.key)) 오디오.해제(e.key)
+        })
+        
+        
+    
+        var 오디오 ={
+            '파형':'sine',
+            '작성':(f,s)=>{
+                if (오디오.목록[s]) return;
+                //console.log('작성',f,s);
+                var AuCon = new AudioContext()
+                var ocil = AuCon.createOscillator()
+                ocil.type=오디오.파형
+                //square, triangle, sine
+                ocil.frequency.setValueAtTime(f, AuCon.currentTime);
+                ocil.connect(AuCon.destination)
+               // console.log('받음',ocil,AuCon)
+                ocil.start()
+                오디오.목록[s] = ocil;
+            },
+            '해제':(s)=>{
+                // console.log('해제',s);
+                if (!오디오.목록[s]) return;
+                오디오.목록[s].stop()
+                오디오.목록[s]=null;
+            },
+            '옥타브':3,
+            '음계':(s)=>{
+                
+                var a="asedrfgyhujiklp;["
+                
+                if (!a.includes(s)) return false;
+               // console.log(s,440/(2**((9-a.indexOf(s))/12)))
+                 return 440/(2**((10-a.indexOf(s))/12))*(2**(오디오.옥타브-3));
+            },
+            '목록':{},
+            
+        }
+    </script>
+    
+<!--    재생-->
+    <script>
+        
+        var 재생={
+            '시작':()=>{
+            var 값 = document.getElementById('재생').value.replaceAll('\n',' ').replace(/(\s\s*)/g, " ") .trim().split(" ")
+            console.log(값)
+            var i=0;
+            var 이름="c_d_ef_g_a_b"
+            var 이전f = 0
+            var a = setInterval(()=>{
+                //console.log(a,i,값.length)
+                if (i>=값.length || !값[i]) {
+                    console.log("끋")
+                    clearInterval(a);
+                     오디오.해제(이전f )
+                    i=0;
+                    return;
+                }
+                
+                if (값[i]!='-') 오디오.해제(이전f)
+                
+                if (!"_-".includes(값[i])){
+                var 옥타브 = Number(값[i][0]) + (오디오.옥타브-3);
+                var 음계 = 이름.indexOf(값[i][1]) + (값[i].length<3 ? 0 : 값[i][2]=='s'? 1: -1)
+                var 주파수 = (440/(2**((9-음계)/12)))*(2**(옥타브-3))
+                //console.log(옥타브, 음계);
+               
+                console.log(주파수)
+                
+                
+                setTimeout(()=>{오디오.작성( 주파수, 주파수)},이전f!=주파수?0:50)
+                이전f = 주파수
+                
+                }
+                 i+=1;
+            },200)
+        }
+        }
+    </script>
+</body>
+</html>
