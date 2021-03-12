@@ -453,27 +453,31 @@ miniFFT(re,im);
         
     function 조절(list,피치){
         var 간격 = list.length;
+        
+        for(var i=0;i<간격/2;i++){
+            var 보수 = 간격-i-1;
+            list[i] *= 10**((그리기.변환(i>0?Math.log(i):0)-1)*2)
+            list[보수] *= 10**((그리기.변환(i>0?Math.log(i):0)-1)*2)
+        }
+        
         var list_ = list.slice()
         for(var i=0;i<간격/2;i++){
-            var 보수 = 간격-i-1
-                list[i] *= 10**((그리기.변환(i>0?Math.log(i):0)-1)*2)
-                list[보수] *= 10**((그리기.변환(i>0?Math.log(i):0)-1)*2)
-            
-                if (피치!=1){ //조이동. 배로 움직여야.
-                    var pi = i/피치
-                    var s = Math.floor(pi)
-                    var pi_ = 간격-pi-1;
-                    var s_ = 간격-s-1;
-                    //알고리즘 1: 보간법
-                    /* //console.log(i,"앞",pi,s,list_[s+1],list_[s],"뒤",pi_,s_,list_[s_-1],list_[s_],)
-                    list[i] = (s+1)<간격/2? (pi-s)*(list_[s+1]-list_[s])+list_[s] : 0;
-                    list[보수] = (s_-1)>=간격/2?-(pi-s)*(list_[s_]-list_[s_-1])+list_[s_] : 0;
-                    */
-                    //알고리즘 2: 대충 반올림. 이게 더 그럴싸
-                    list[i] = s<간격/2?list_[s]:0
-                    list[보수] = s_>간격/2?list_[s_]:0
-                    
-            }
+            var 보수 = 간격-i-1;
+            if (피치!=1){ //조이동. 배로 움직여야.
+                var pi = i/피치
+                var s = Math.floor(pi)
+                var pi_ = 간격-pi-1;
+                var s_ = 간격-s-1;
+                //알고리즘 1: 보간법
+                /* //console.log(i,"앞",pi,s,list_[s+1],list_[s],"뒤",pi_,s_,list_[s_-1],list_[s_],)
+                list[i] = (s+1)<간격/2? (pi-s)*(list_[s+1]-list_[s])+list_[s] : 0;
+                list[보수] = (s_-1)>=간격/2?-(pi-s)*(list_[s_]-list_[s_-1])+list_[s_] : 0;
+                */
+                //알고리즘 2: 대충 반올림. 이게 더 그럴싸
+                list[i] = s<간격/2?list_[s]:0
+                list[보수] = s_>간격/2?list_[s_]:0
+
+        }
         }
     }
         
