@@ -101,11 +101,12 @@ miniFFT(re,im);
                        var 너비 = 오디오.길이 / 간격
                        let d=''
                        
+                       
                        console.log(오디오, 간격/10,"초를 분석 할 것.");
                        for(var i=0;i<간격;i++){
                            표시.innerHTML = i;
-                           let min, max;
-                           min = max = 피크[i*너비];
+                          let min, max;
+                           min = max = 피크[Math.floor(i*너비)];
                            for(var j=1; j<너비 ;j++){
                                var 값 = 피크[Math.floor(i*너비+j)]
                                if(값>max) max=값
@@ -460,22 +461,34 @@ miniFFT(re,im);
             list[보수] *= 10**((그리기.변환(i>0?Math.log(i):0)-1)*2)
         }
         
-        var list_ = list.slice()
+        var list_ = list.slice()//new Array( list.length ).fill(0)
+
+var pre_s=0, pre_s_=0 // 중복 제거... 맥놀이 일어남;;;;
+
         for(var i=0;i<간격/2;i++){
             var 보수 = 간격-i-1;
             if (피치!=1){ //조이동. 배로 움직여야.
-                var pi = i/피치
-                var s = Math.floor(pi)
-                var pi_ = 간격-pi-1;
+                var pi = (i+1)/피치
+                var s = Math.round(pi)-1
+                s= s>=0 ? s:0;
+                //var pi_ = 간격-pi-1;
                 var s_ = 간격-s-1;
                 //알고리즘 1: 보간법
-                /* //console.log(i,"앞",pi,s,list_[s+1],list_[s],"뒤",pi_,s_,list_[s_-1],list_[s_],)
+                 /*//console.log(i,"앞",pi,s,list_[s+1],list_[s],"뒤",pi_,s_,list_[s_-1],list_[s_],)
                 list[i] = (s+1)<간격/2? (pi-s)*(list_[s+1]-list_[s])+list_[s] : 0;
                 list[보수] = (s_-1)>=간격/2?-(pi-s)*(list_[s_]-list_[s_-1])+list_[s_] : 0;
-                */
+                */ //console.log(i,보수,s,s_)
                 //알고리즘 2: 대충 반올림. 이게 더 그럴싸
+
+if(s!=pre_s)
                 list[i] = s<간격/2?list_[s]:0
+else list[i]=0
+if(s_!=pre_s_)
                 list[보수] = s_>간격/2?list_[s_]:0
+else list[보수]=0
+
+pre_s = s
+pre_s_ = s_
 
         }
         }
@@ -561,8 +574,11 @@ miniFFT(re,im);
                 var re = inputData;
                 var im = new Float32Array(간격).fill(0)
                 miniFFT(re,im);
-                조절(re,play.피치); 조절(im,play.피치);
+                조절(re,play.피치); 조절(im,play.피치); 
+                //조절(re,1); 조절(im,1);  // 실제로 바꿀 때는, 이 조절함수의 기능 안 쓰고 다르게 하기
                 miniIFFT(re,im);
+	//IFT(re,im, 1)
+	
                 re.forEach(function(v,i,ar){outputData[i] = v})
             }
         }
@@ -589,6 +605,7 @@ miniFFT(re,im);
 
         
 function miniFFT(re, im) {
+//if(!alpha) alpha=1; // 조바꿈 멕놀이 생성 문제 해결?
     var N = re.length;
     for (var i = 0; i < N; i++) {
         for(var j = 0, h = i, k = N; k >>= 1; h >>= 1)
@@ -600,9 +617,9 @@ function miniFFT(re, im) {
     }
     for(var hN = 1; hN * 2 <= N; hN *= 2)
         for (var i = 0; i < N; i += hN * 2)
-            for (var j = i; j < i + hN; j++) {
-                var cos = Math.cos(Math.PI * (j - i) / hN),
-                    sin = Math.sin(Math.PI * (j - i) / hN)
+            for (var j = i; j < i + hN; j++) { 
+                var cos = Math.cos(Math.PI * (j - i) / hN ),
+                    sin = Math.sin(Math.PI * (j - i) / hN )
                 var tre =  re[j+hN] * cos + im[j+hN] * sin,
                     tim = -re[j+hN] * sin + im[j+hN] * cos;
                 re[j + hN] = re[j] - tre; im[j + hN] = im[j] - tim;
@@ -618,6 +635,49 @@ function miniIFFT(re, im){
     }
 }
 
+
+/*
+function IFT(re,im, 피치){
+if(!피치) 피치=1
+var N = re.length;
+var re_out = re.slice()
+var im_out = im.slice()
+  
+for(var n=0; n<N; n++){
+
+for(var k=0; k<N; k++){
+  //re[k], Im(k)
+	var cos=Math.cos(2*Math.PI/N*n*k*피치), 
+	sin= Math.sin(2*Math.PI/N*n*k*피치)
+
+re_out[n]+=  re[k]*cos - im[k]*sin
+im_out[n]+=  re[k]*sin + im[k]*cos
+ 
+}
+}
+re = re_out
+im = im_out
+    for(var i = 0; i < N; i++){
+        im[i] /= N;
+        re[i] /= N;
+    }
+}	
+
+function arr2(ar){return (new Float32Array(ar.length*2)).map((v,i)=>{
+f=(a,b,c,d)=>(-a+9*b+9*c-d)/16
+fe=(a,b,c, d)=>(a-5*b+15*c+5*d)/16
+fs=(a,b,c, d)=>(5*a+15*b-5*c+d)/16
+fee=(a,b,c,d)=>(-5*a + 21*b - 35*c + 35*d)/16
+if (!(i%2)) return ar[i/2];
+var s = (i+1)/2;
+if(i==1) return fs(ar[0],ar[1],ar[2],ar[3])
+else if(i==(ar.length*2)-3) return fs(ar[s-3], ar[s-2],ar[s-1],ar[s])
+else if(i==(ar.length*2)-1) return fee(ar[s-4], ar[s-3], ar[s-2],ar[s-1])
+else return f(ar[s-2], ar[s-1], ar[s], ar[s+1])
+})} 
+function arrh(ar){return (new Float32Array(Math.floor(ar.length/2))).map((v,i)=>ar[i*2])}
+
+*/
     </script>
     
     

@@ -3,10 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>안녕</title>
+    <link type="font" href="D2Coding.ttf">
     <style>
-        #재생{
+        *{
+            font-family: D2Coding;
+        }
+        .글자창{
             height: 500px;
-            width: 500px;
+            width: 32%;
         }
     </style>
 </head>
@@ -16,14 +20,32 @@
      <span onclick="오디오.파형='square'">square</span>
      <span onclick="오디오.파형='sawtooth'">sawtooth</span>
      <span onclick="오디오.파형='triangle'">triangle</span>
+     <input id="i" type="range" min="50" max="600" value="300">
  </div>
  <div id="옥타는">옥타브: <span id='옥타브'>3</span></div>
-  <button onclick="재생.시작()">재생</button>
-   <textarea id='재생'>
+ <div id="비트는">비트: <span id='비트'>300</span></div>
+ 
+  <button onclick="" id='재생버튼'>재생</button>
+  <div>
+   <textarea id='재생' class="글자창"></textarea>
+   <textarea id='재생_반주' class="글자창"></textarea>
+   <textarea id="입력내역" class="글자창"></textarea>
+   </div>
+   <script>
+       document.getElementById('i').addEventListener('change',(e)=>{
+           console.log(e.target.value)
+           document.getElementById('비트').innerHTML=재생.비트=e.target.value
+       })
        
-   </textarea>
-   
-   <textarea id="입력내역"></textarea>
+       
+       document.getElementById('재생버튼').addEventListener('click',(e)=>{
+           var 값 = document.getElementById('재생').value.replaceAll('\n',' ').replace(/(\s\s*)/g, " ") .trim().split(" ")
+            var 값_반주 = document.getElementById('재생_반주').value.replaceAll('\n',' ').replace(/(\s\s*)/g, " ") .trim().split(" ")
+            
+            재생.시작(값);
+            재생.시작(값_반주);
+       })
+    </script>
    
     
     
@@ -41,13 +63,16 @@
             if (e.key=='Backspace'){
                 e.returnValue=false;
                 var a = document.getElementById('입력내역').value
-                document.getElementById('입력내역').value=a.substr(0,a.length-3)
+                document.getElementById('입력내역').value=a.substr(0,a.length-4)
             }
             else if(e.key==' '){
-                document.getElementById('입력내역').value += '  _'
+                document.getElementById('입력내역').value += '   _'
             }
             else if("_-".includes(e.key)){
-                document.getElementById('입력내역').value += '  '+e.key
+                document.getElementById('입력내역').value += '   '+e.key
+            }
+            else if(e.key=='Enter'){
+                document.getElementById('입력내역').value += '\n'
             }
             else if ("1234567890".includes(e.key)){
                 오디오.옥타브 = Number(e.key)
@@ -57,14 +82,14 @@
                 if (오디오.목록[e.key]) return;
                 
                 //입력내역추가
-                var a="asedrfgyhujiklp;["
+                var a="asedrfgyhujiklp;['"
                  var 내보낼옥타브 = 오디오.옥타브
                 if ("a".includes(e.key)) 내보낼옥타브-=1
-                else if ("lp;[".includes(e.key)) 내보낼옥타브+=1
+                else if ("lp;['".includes(e.key)) 내보낼옥타브+=1
                 
                 
-                var 코드 = 내보낼옥타브.toString()+"b c cs d ds e f fs g gs a as b c cs d ds".split(" ")[a.indexOf(e.key)]
-                document.getElementById('입력내역').value+=' '+코드
+                var 코드 = 내보낼옥타브.toString()+"b c cs d ds e f fs g gs a as b c cs d ds e".split(" ")[a.indexOf(e.key)]
+                document.getElementById('입력내역').value+=(코드.length==2?"  ":" ")+코드
                 
                 오디오.작성(오디오.음계(e.key),e.key)
             }
@@ -102,7 +127,6 @@
             '음계':(s)=>{
                 
                 var a="asedrfgyhujiklp;["
-                
                 if (!a.includes(s)) return false;
                // console.log(s,440/(2**((9-a.indexOf(s))/12)))
                  return 440/(2**((10-a.indexOf(s))/12))*(2**(오디오.옥타브-3));
@@ -116,8 +140,7 @@
     <script>
         
         var 재생={
-            '시작':()=>{
-            var 값 = document.getElementById('재생').value.replaceAll('\n',' ').replace(/(\s\s*)/g, " ") .trim().split(" ")
+            '시작':(값)=>{
             console.log(값)
             var i=0;
             var 이름="c_d_ef_g_a_b"
@@ -140,16 +163,16 @@
                 var 주파수 = (440/(2**((9-음계)/12)))*(2**(옥타브-3))
                 //console.log(옥타브, 음계);
                
-                console.log(주파수)
+                console.log(음계,주파수)
                 
-                
-                setTimeout(()=>{오디오.작성( 주파수, 주파수)},이전f!=주파수?0:50)
+                setTimeout(()=>{오디오.작성( 주파수, 주파수)},이전f!=주파수?0:40)
                 이전f = 주파수
                 
                 }
                  i+=1;
-            },200)
-        }
+            },60*1000/재생.비트)
+        },
+        비트:300,
         }
     </script>
 </body>
