@@ -46,3 +46,7 @@
 ## [푸리에.tex](https://esctabcapslock.github.io/WebAudioAPI/%ED%91%B8%EB%A6%AC%EC%97%90.tex)
 ### 내용
 - 이대로 끝내기 아쉬워, 수학적인 원리를 추가로 탐구했음. (2021.03.11 ~ 15)
+
+## [reduce_main.tex](https://github.com/esctabcapslock/WebAudioAPI/blob/main/%ED%91%B8%EB%A6%AC%EC%97%90%20%ED%95%B4%EC%84%9D%EA%B3%BC%20%EB%AF%B8%EB%B0%A9/reduce_main.pdf)
+### 내용
+- 미분방정식과 관련된 푸리에 변환 탐구. (2021.09.27 ~ 28)
