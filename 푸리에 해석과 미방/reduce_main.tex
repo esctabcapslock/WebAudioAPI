@@ -8,7 +8,7 @@
 \usepackage{amsthm}
 \hypersetup{colorlinks=false,}  
 \usepackage{fapapersize}
-\usefapapersize{210mm, 297mm,20mm,*,25mm,20mm}
+\usefapapersize{210mm, 297mm,26mm,*,25mm,20mm}
 \title{푸리에 해석과 미분방정식}
 \author{esctabcapslock}
 \makeindex
@@ -19,7 +19,7 @@
 \subsection{목적과 개요}
 
 \begin{itemize}
-    \item 18세기 프링스의 수학자 조제프 푸리에 (Joseph Fourier, 1768 - 1830)가 열 전도 미방을  풀기 위해 만듦
+    \item 18세기 프링스의 수학자 조제프 푸리에 (Joseph Fourier, 1768 - 1830)가 열 전도 미방을  잘 풀기 위해 만듦
     \item 어떤 함수가 있으면, 그 함수를 삼각함수의 합으로 표현한다. 기저를 바꾼다.
     \item 전자, 전기, 통신, 기계, 구조공학, 소리 등 아주 다양한 공학 분야에서 활용 중
     \item 이를 이용하면 불확정성 원리 증명할 수 있음.
@@ -82,7 +82,7 @@ $a_0 = \frac{1}{L} \int_{-L}^{L} f(t)dt
 =\frac{1}{L} \left\langle f(t) \mid \cos\frac{n \pi t}{L}\right\rangle, b_n = \cdots$ 이렇게 각 기저 성분을 모은 것으로 표현할 수 있다.
 
 \section{복소수에서의 푸리에 급수}
-$c_n = \frac{1}{2}\left(a_n - ib_n\right)$, $c_{-n} = \frac{1}{2}\left(a_n + ib_n\right)$으로 정의한다면, $c_n = \frac{1}{2L}\int_{-L}^{L} f(t)e^{i\frac{n \pi t}{L}}$이 나온다. 간단하게 정리하면\footnote{$\cos \theta = \frac{e^{i \theta} + e^{-i \theta}}{2}$ 등 오일러 공식 활용}, 본 급수는 더 깔끔하게, 다음과 같이 쓸 수 있다.
+$c_n = \frac{1}{2}\left(a_n - ib_n\right)$, $c_{-n} = \frac{1}{2}\left(a_n + ib_n\right)$으로 정의한다면, $c_n = \frac{1}{2L}\int_{-L}^{L} f(t)e^{i\frac{n \pi t}{L}} dt$이 나온다. 간단하게 정리하면\footnote{$\cos \theta = \frac{e^{i \theta} + e^{-i \theta}}{2}$ 등 오일러 공식 활용}, 본 급수는 더 깔끔하게, 다음과 같이 쓸 수 있다.
 \begin{equation}
     f(t) = \sum_{n=-\infty}^{\infty} c_n e^{i \frac{n \pi t}{L}}
 \end{equation}
@@ -90,8 +90,8 @@ $c_n = \frac{1}{2}\left(a_n - ib_n\right)$, $c_{-n} = \frac{1}{2}\left(a_n + ib_
 %https://freshrimpsushi.github.io/posts/complex-representation-of-fourier-series/
 \section{푸리에 변환과 역변환}
 
-주가함수가 아니라, 일반적 함수에 대해 적용시키면 푸리에 변환이다. $\lim_{x \to \pm \infty}f(x)=0$이고 적분 가능한 일반적인 $f$에서, 유도해 보자.
-$\Delta \xi = \frac{\pi}{L}$, $F(n) = \int_{-L}^{L} f(t)e^{i\frac{n \pi t}{L}}$으로 두면 다음이 성립한다. 
+주가함수가 아니라, 일반적 함수에 대해 적용시키면 푸리에 변환이다. $\lim_{x \to \pm \infty}f(x)=0$이고 적분 가능한 일반적인 $f$에서,  유도해 보자.
+$\Delta \xi = \frac{\pi}{L}$, $F(n) = \int_{-L}^{L} f(t)e^{i\frac{n \pi t}{L}} dt$로 두면 다음이 성립한다. 
 $$f(t) = \frac{L}{\pi} \sum_{n=-\infty}^{\infty} c_n e^{i \Delta \xi n t} = \frac{1}{2\pi} \sum_{n=-\infty}^{\infty} F(n) e^{i  \Delta \xi n t} \Delta \xi$$
 그리고 $L \to \infty$로 두면, $\Delta \xi \to 0$이다. 위 식은 리만합으로써 적분꼴로 쓸 수 있다.
 
@@ -132,7 +132,7 @@ $$u(x,t) = \frac{1}{\sqrt{4 \pi k t}} \int f(y) e^{-\frac{\left(x-y\right)^2}{4 
 
 \section{참고문헌}
 \begin{itemize}
-    \item \href{https://freshrimpsushi.github.io/}{블로그: 생새우초밥집 \> 푸리에 해석 카테고리} \footnote{https://freshrimpsushi.github.io}
     \item 도서: (핵심) Fourier 해석과 복소해석 Fourier analysis \& complex analysis, 전병재 지음, 텍스트북스
+    \item \href{https://freshrimpsushi.github.io/}{블로그: 생새우초밥집 \> 푸리에 해석 카테고리} \footnote{https://freshrimpsushi.github.io}
 \end{itemize}
 \end{document}
