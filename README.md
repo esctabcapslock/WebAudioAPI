@@ -1,8 +1,8 @@
 # WebAudioAPI
-오디오API 갖고 놀기 (2021.01.29~31)
+오디오API 갖고 놀기
 
 ## [멜로디.html](https://esctabcapslock.github.io/WebAudioAPI/%EB%A9%9C%EB%A1%9C%EB%94%94.html)
-   
+(2021.01.29~31)
 ### 기능
 - WebAudioAPI의 오실레이터를 이용해 주파수를 발생시킨다
 - 키보드 자판을 누르면 해당되는 소리가 난다
@@ -26,6 +26,7 @@
 
 
 ## [푸리에.html](https://esctabcapslock.github.io/WebAudioAPI/%ED%91%B8%EB%A6%AC%EC%97%90.html)
+(2021.01.29~31)
 ### 기능
 - 고속 푸리에 변환(FFT)를 사용해봤다. <a href="https://evan-moon.github.io/2019/07/10/javascript-audio-waveform/">여기</a>를 사용함
 - FFT를 바탕으로, 오디어 데이터를 날것으로 분석해서 1<<13 / 1<<12 단위로 뜯어서 데이터 시각화 기능 + 음성 변조 기능 + 이퀄라이저 기능을 만들었음
