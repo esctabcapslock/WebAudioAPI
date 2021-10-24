@@ -1,5 +1,5 @@
 # WebAudioAPI
-오디오API 갖고 놀기
+웹오디오API 갖고 놀기 + 푸리에 변환
 
 ## [멜로디.html](https://esctabcapslock.github.io/WebAudioAPI/%EB%A9%9C%EB%A1%9C%EB%94%94.html)
 (2021.01.29~31)
